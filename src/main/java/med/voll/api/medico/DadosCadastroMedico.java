@@ -7,5 +7,5 @@ public record DadosCadastroMedico(String nome,
                                   String telefone,
                                   String crm,
                                   Especialidade especialidade,
-                                  DadosEndereco dadosEndereco) {
+                                  DadosEndereco endereco) {
 }
