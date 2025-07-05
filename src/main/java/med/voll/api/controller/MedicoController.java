@@ -2,10 +2,7 @@ package med.voll.api.controller;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import med.voll.api.medico.DadosCadastroMedico;
-import med.voll.api.medico.DadosListagemMedico;
-import med.voll.api.medico.Medico;
-import med.voll.api.medico.MedicoRepository;
+import med.voll.api.medico.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +45,10 @@ public class MedicoController {
 
     @PutMapping
     @Transactional
-    public void editarMedico() {
-        System.out.println("ok");
+    public void editarMedico(@RequestBody @Valid DadosAtualizacaoMedico dadosAtualizacaoMedico) {
+        //pegar uma referencia do tipo médico
+        var medico = repository.getReferenceById(dadosAtualizacaoMedico.id());
+        medico.atualizarDadosMedicos(dadosAtualizacaoMedico);
+
     }
 }
