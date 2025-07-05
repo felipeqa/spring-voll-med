@@ -9,6 +9,7 @@ import med.voll.api.medico.MedicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +33,16 @@ public class MedicoController {
 //        return repository.findAll(paginacao).stream().map(DadosListagemMedico::new).toList();
 //    }
 
+    //versão com pageable gerenciado pelo spring, podendo ser alterado ao passar na url
+    //medicos?size=10&sort=nome
+//    @GetMapping
+//    public Page<DadosListagemMedico> listarMedicos(Pageable paginacao) {
+//        return repository.findAll(paginacao).map(DadosListagemMedico::new);
+//    }
+
+    //alterando o default para 10 e ordenação por nome
     @GetMapping
-    public Page<DadosListagemMedico> listarMedicos(Pageable paginacao) {
+    public Page<DadosListagemMedico> listarMedicos(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
         return repository.findAll(paginacao).map(DadosListagemMedico::new);
     }
 }
