@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/medicos")
@@ -45,17 +44,19 @@ public class MedicoController {
 
     @PutMapping
     @Transactional
-    public void editarMedico(@RequestBody @Valid DadosAtualizacaoMedico dadosAtualizacaoMedico) {
+    public ResponseEntity editarMedico(@RequestBody @Valid DadosAtualizacaoMedico dadosAtualizacaoMedico) {
         //pegar uma referencia do tipo médico
         var medico = repository.getReferenceById(dadosAtualizacaoMedico.id());
         medico.atualizarDadosMedicos(dadosAtualizacaoMedico);
-
+        //criar um DTO para retornar
+        return ResponseEntity.ok(new DadosDetalhadoRetornoMedico(medico));
     }
 
     @DeleteMapping("/{id}")
     @Transactional
-    public void excluir(@PathVariable Long id) {
+    public ResponseEntity excluir(@PathVariable Long id) {
         var medico = repository.getReferenceById(id);
         medico.excluir();
+        return ResponseEntity.noContent().build();
     }
 }
