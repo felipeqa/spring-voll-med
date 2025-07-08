@@ -50,6 +50,17 @@ public class MedicoController {
         return ResponseEntity.ok(repository.findAllByAtivoTrue(paginacao).map(DadosListagemMedico::new));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity detalhar(@PathVariable Long id) {
+
+        // repository.findById(id)
+        // repository.getReferenceById(id)
+
+        // return ResponseEntity.ok(repository.findById(id).map(DadosDetalhadoRetornoMedico::new));
+        var medico = repository.getReferenceById(id);
+        return ResponseEntity.ok(new DadosDetalhadoRetornoMedico(medico));
+    }
+
     @PutMapping
     @Transactional
     public ResponseEntity editarMedico(@RequestBody @Valid DadosAtualizacaoMedico dadosAtualizacaoMedico) {
