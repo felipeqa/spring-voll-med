@@ -7,6 +7,9 @@ import med.voll.api.domain.paciente.DadosRetornoPaciente;
 import med.voll.api.domain.paciente.Paciente;
 import med.voll.api.domain.paciente.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -27,5 +30,10 @@ public class PacienteController {
         var uri = uriBulder.path("/paciente/{id}").buildAndExpand(paciente.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new DadosRetornoPaciente(paciente));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<DadosListagemPaciente>> listarPacientes(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
+        return ResponseEntity.ok(repository.findAll(paginacao).map(DadosListagemPaciente::new));
     }
 }
