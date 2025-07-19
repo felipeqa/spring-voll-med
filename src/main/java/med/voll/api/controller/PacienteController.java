@@ -2,10 +2,7 @@ package med.voll.api.controller;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import med.voll.api.domain.paciente.DadosCadastroPaciente;
-import med.voll.api.domain.paciente.DadosRetornoPaciente;
-import med.voll.api.domain.paciente.Paciente;
-import med.voll.api.domain.paciente.PacienteRepository;
+import med.voll.api.domain.paciente.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,5 +32,20 @@ public class PacienteController {
     @GetMapping
     public ResponseEntity<Page<DadosListagemPaciente>> listarPacientes(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
         return ResponseEntity.ok(repository.findAll(paginacao).map(DadosListagemPaciente::new));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DadosDetalhadoPaciente> buscarPaciente(@PathVariable Long id) {
+        var paciente = repository.getReferenceById(id);
+        return ResponseEntity.ok(new DadosDetalhadoPaciente(paciente));
+
+    }
+
+    @PutMapping
+    public ResponseEntity<DadosDetalhadoPaciente> editarPaciente(@RequestBody @Valid RequestAtualizarPaciente requestAtualizarPaciente) {
+        var paciente = repository.getReferenceById(requestAtualizarPaciente.id());
+        paciente.atualizarPaciente(requestAtualizarPaciente);
+
+        return ResponseEntity.ok(new DadosDetalhadoPaciente(paciente));
     }
 }
