@@ -1,7 +1,6 @@
 package med.voll.api.domain.paciente;
 
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,11 +23,13 @@ public class Paciente {
     private String email;
     private String cpf;
     private String telefone;
+    private boolean ativo;
 
     @Embedded
     private Endereco endereco;
 
     public Paciente(DadosCadastroPaciente dadosCadastroPaciente) {
+        this.ativo = true;
         this.nome = dadosCadastroPaciente.nome();
         this.email = dadosCadastroPaciente.email();
         this.cpf = dadosCadastroPaciente.cpf();
@@ -43,5 +44,9 @@ public class Paciente {
                 .ifPresent(t -> this.telefone = t);
         Optional.ofNullable(dadosPaciente.endereco())
                 .ifPresent(e -> this.endereco.atualizarEndereco(e));
+    }
+
+    public void excluir() {
+        this.ativo = false;
     }
 }
