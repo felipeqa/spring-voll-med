@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
@@ -43,6 +45,7 @@ public class PacienteController {
     }
 
     @PutMapping
+    @Transactional
     public ResponseEntity<DadosDetalhadoPaciente> editarPaciente(@RequestBody @Valid RequestAtualizarPaciente requestAtualizarPaciente) {
         var paciente = repository.getReferenceById(requestAtualizarPaciente.id());
         paciente.atualizarPaciente(requestAtualizarPaciente);
@@ -56,5 +59,24 @@ public class PacienteController {
         var paciente = repository.getReferenceById(id);
         paciente.excluir();
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/cpf/{cpf}")
+    @Transactional
+    public ResponseEntity<DadosDetalhadoPaciente> ativarPaciente(@PathVariable String cpf){
+
+        var paciente = repository.findByCpf(formatarCpf(cpf))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Paciente não encontrado"));
+
+        paciente.reativarPaciente();
+
+        return ResponseEntity.ok(new DadosDetalhadoPaciente(paciente));
+    }
+
+    private String formatarCpf(String cpf) {
+        if (cpf == null || !cpf.matches("\\d{11}")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CPF inválido");
+        }
+        return cpf.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
     }
 }
